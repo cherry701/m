@@ -1,0 +1,52 @@
+import numpy as np
+x=np.array(([2,9],[1,5],[3,6]),dtype=float)
+y=np.array(([86],[92],[89]),dtype=float)
+x=x/np.amax(x,axis=0)
+y=y/100
+
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+def derivative_sigmoid(x):
+    return x*(1-x)
+
+epoch=5
+lr=0.1
+
+iln=2
+hln=1
+oln=1
+
+wh=np.random.uniform(size=(iln,hln))
+bh=np.random.uniform(size=(1,hln))
+wout=np.random.uniform(size=(hln,oln))
+bout=np.random.uniform(size=(1,oln))
+
+for i in range(epoch):
+    hinp1=np.dot(x,wh)
+    hinp=hinp1+bh
+    hlayer_act=sigmoid(hinp)
+
+    oinp1=np.dot(hlayer_act,wout)
+    oinp=oinp1+bout
+    output=sigmoid(oinp)
+
+    eo=y-output
+    outgrad=derivative_sigmoid(output)
+    d_output=eo*outgrad
+
+    eh=np.dot(d_output,wout.T)
+    hiddgrad=derivative_sigmoid(hlayer_act)
+    d_hidd=eh*hiddgrad
+
+    wout=wout+np.dot(hlayer_act.T,d_output)*lr
+    wh=wh+np.dot(x.T,d_hidd)*lr
+
+    print("Epoch : ",i+1)
+    print("Input : ",x)
+    print("Actual output : ",y)
+    print("Predicted output : ",output)
+
+print("Epoch : ",i+1)
+print("Input : ",x)
+print("Actual output : ",y)
+print("Predicted output : ",output)
