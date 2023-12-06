@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+def kernal(point,xmat,k):
+    m,n=np.shape(xmat)
+    weights=np.mat(np.eye(m))
+
+    for i in range(m):
+        diff=point-xmat[i]
+        weights[i,i]=np.exp(diff*diff.T/(-2*k**2))
+    return weights
+
+def local_weights(point,xmat,ymat,k):
+    wt=kernal(point,xmat,k)
+    W=(x.T*(wt*x)).I*(x.T*wt*ymat.T)
+    return W
+
+def local_regression(xmat,ymat,k):
+    m,n=np.shape(xmat)
+    ypred=np.ones(m)
+    for i in range(m):
+        ypred[i]=xmat[i]*local_weights(xmat[i],xmat,ymat,k)
+    return ypred
+
+df=pd.read_csv("10-dataset (1).csv")
+df
+cola=np.array(df.total_bill)
+colb=np.array(df.tip)
+mcola=np.mat(cola)
+mcolb=np.mat(colb)
+
+m=np.shape(mcolb)[1]
+one=np.ones((1,m),dtype=int)
+
+x=np.hstack((one.T,mcola.T))
+ypred=local_regression(x,mcolb,0.8)
+
+xsort=x.copy()
+xsort.sort(axis=0)
+plt.scatter(cola,colb,color='blue')
+plt.plot(xsort[:,1],ypred[x[:,1].argsort(0)],color='green',linewidth=5)
+plt.show()
