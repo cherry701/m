@@ -1,0 +1,22 @@
+import pandas as pd
+from sklearn import metrics
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+df=pd.read_csv("text_classification_4.csv",names=["message","label"])
+df
+df["label_num"]=df.label.map({"pos":1,"neg":0})
+df
+x=df.message
+y=df.label_num
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.4)
+
+cv=CountVectorizer()
+xtrain=cv.fit_transform(x_train)
+xtest=cv.transform(x_test)
+mnb=MultinomialNB()
+mnb.fit(xtrain,y_train)
+y_pred=mnb.predict(xtest)
+print("Accuracy : ",metrics.accuracy_score(y_pred,y_test))
+print("Precision : ",metrics.precision_score(y_pred,y_test))
+print("Recall : ",metrics.recall_score(y_pred,y_test))
